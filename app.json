@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/game/game",
+    "pages/history/history"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarTitleText": "CABO 记分板",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f0f2f5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#e94560",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "玩家",
+        "iconPath": "assets/icons/players.png",
+        "selectedIconPath": "assets/icons/players_active.png"
+      },
+      {
+        "pagePath": "pages/game/game",
+        "text": "记分",
+        "iconPath": "assets/icons/score.png",
+        "selectedIconPath": "assets/icons/score_active.png"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史",
+        "iconPath": "assets/icons/history.png",
+        "selectedIconPath": "assets/icons/history_active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

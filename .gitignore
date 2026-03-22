@@ -1,0 +1,14 @@
+# 小程序
+node_modules/
+miniprogram_npm/
+*.log
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 本地配置
+project.private.config.json

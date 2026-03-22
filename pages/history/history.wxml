@@ -1,0 +1,72 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <text class="header-title">历史记录</text>
+    <text class="header-sub" wx:if="{{rounds.length > 0}}">共 {{rounds.length}} 轮</text>
+  </view>
+
+  <!-- 当前总分榜 -->
+  <view class="score-table" wx:if="{{players.length > 0}}">
+    <view class="table-title">当前总分</view>
+    <view class="table-header">
+      <text class="col-name">玩家</text>
+      <text class="col-score">总分</text>
+      <text class="col-status">状态</text>
+    </view>
+    <view
+      class="table-row"
+      wx:for="{{players}}"
+      wx:key="id"
+    >
+      <text class="col-name">{{item.name}}</text>
+      <text class="col-score {{item.totalScore > 100 ? 'score-over' : ''}}">{{item.totalScore}}</text>
+      <view class="col-status">
+        <text class="tag-eliminated" wx:if="{{item.totalScore > 100}}">超出</text>
+        <text class="tag-rule-used" wx:elif="{{item.hasUsed50Rule}}">已100→50</text>
+        <text class="tag-normal" wx:else>正常</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{rounds.length === 0}}">
+    <text class="empty-icon">📋</text>
+    <text>暂无历史记录</text>
+    <text class="empty-sub">完成一轮记分后，记录会出现在这里</text>
+  </view>
+
+  <!-- 历史轮次列表（最新在前）-->
+  <view class="round-list">
+    <view class="round-card" wx:for="{{rounds}}" wx:key="round">
+      <!-- 轮次标题 -->
+      <view class="round-header">
+        <text class="round-num">第 {{item.round}} 轮</text>
+        <view class="cabo-info" wx:if="{{item.hasCaboCaller}}">
+          <text class="cabo-tag">CABO</text>
+          <text class="cabo-caller">{{item.caboCallerName}} {{item.caboResultText}}</text>
+        </view>
+      </view>
+
+      <!-- 分数明细 -->
+      <view class="score-detail">
+        <view
+          class="detail-row"
+          wx:for="{{item.scores}}"
+          wx:key="playerId"
+          wx:for-item="scoreItem"
+          wx:for-index="si"
+        >
+          <view class="detail-player">
+            <text class="detail-name">{{scoreItem.playerName}}</text>
+            <text class="detail-note" wx:if="{{scoreItem.note}}">{{scoreItem.note}}</text>
+          </view>
+          <view class="detail-scores">
+            <text class="detail-add {{scoreItem.addScore === 0 ? 'score-zero' : ''}}">+{{scoreItem.addScore}}</text>
+            <text class="detail-total">→ {{scoreItem.totalScore}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

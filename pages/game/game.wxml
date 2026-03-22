@@ -1,0 +1,156 @@
+<!--pages/game/game.wxml-->
+<view class="container">
+
+  <!-- 未开始游戏提示 -->
+  <view class="no-game" wx:if="{{!gameStarted && !gameOver}}">
+    <text class="no-game-emoji">🃏</text>
+    <text class="no-game-text">还没有进行中的游戏</text>
+    <text class="no-game-sub">请先到「玩家」页添加玩家并开始游戏</text>
+    <navigator url="/pages/index/index" open-type="switchTab">
+      <button class="btn-go-setup">去设置玩家</button>
+    </navigator>
+  </view>
+
+  <!-- 游戏结束界面 -->
+  <view class="game-over-panel" wx:if="{{gameOver}}">
+    <view class="game-over-header">
+      <text class="game-over-title">游戏结束 🎉</text>
+      <text class="game-over-sub">共 {{currentRound - 1}} 轮</text>
+    </view>
+
+    <!-- 获胜者 -->
+    <view class="winner-area">
+      <view class="winner-card" wx:for="{{winner}}" wx:key="id">
+        <text class="winner-crown">👑</text>
+        <text class="winner-name">{{item.name}}</text>
+        <text class="winner-score">{{item.totalScore}} 分</text>
+      </view>
+    </view>
+
+    <!-- 最终排名 -->
+    <view class="final-ranking">
+      <text class="ranking-title">最终排名</text>
+      <view class="ranking-list">
+        <view
+          class="ranking-item {{item.totalScore === winnerMinScore ? 'ranking-winner' : ''}}"
+          wx:for="{{players}}"
+          wx:key="id"
+        >
+          <text class="ranking-name">{{item.name}}</text>
+          <text class="ranking-score">{{item.totalScore}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="game-over-actions">
+      <button class="btn-history" bindtap="goHistory">查看历史</button>
+      <button class="btn-new-game" bindtap="newGame">新游戏</button>
+    </view>
+  </view>
+
+  <!-- 记分界面（游戏进行中） -->
+  <view wx:if="{{gameStarted}}">
+    <!-- 顶部信息栏 -->
+    <view class="top-bar">
+      <view class="round-info">
+        <text class="round-label">第</text>
+        <text class="round-num">{{currentRound}}</text>
+        <text class="round-label">轮</text>
+      </view>
+      <view class="score-board-mini">
+        <view class="mini-score-item" wx:for="{{players}}" wx:key="id">
+          <text class="mini-name">{{item.name}}</text>
+          <text class="mini-score">{{item.totalScore}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 特殊事件提示 -->
+    <view class="special-events" wx:if="{{specialEvents.length > 0}}">
+      <view class="event-item" wx:for="{{specialEvents}}" wx:key="index">
+        <text>{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 记分表单 -->
+    <view class="score-form">
+      <view class="form-title">
+        <text>本轮手牌总分 · 点击 CABO 标记喊话者</text>
+      </view>
+
+      <!-- 玩家分数输入行 -->
+      <view
+        class="score-row {{item.isCaboCaller ? 'row-cabo' : ''}}"
+        wx:for="{{roundScores}}"
+        wx:key="playerId"
+      >
+        <!-- Cabo喊话标记按钮 -->
+        <view
+          class="cabo-badge {{item.isCaboCaller ? 'cabo-active' : ''}}"
+          data-playerid="{{item.playerId}}"
+          data-playername="{{item.playerName}}"
+          bindtap="selectCaboCaller"
+        >
+          <text>CABO</text>
+        </view>
+
+        <!-- 玩家名 + 当前总分 -->
+        <view class="player-label">
+          <text class="pl-name">{{item.playerName}}</text>
+          <text class="pl-total">{{players[index].totalScore}}分</text>
+        </view>
+
+        <!-- 分数输入框 -->
+        <view class="score-input-wrap">
+          <input
+            class="score-input {{item.isCaboCaller && caboWon ? 'input-win' : ''}} {{item.isCaboCaller && caboWon === false ? 'input-lose' : ''}}"
+            type="number"
+            placeholder="0"
+            value="{{item.score}}"
+            data-index="{{index}}"
+            bindinput="onScoreInput"
+            maxlength="3"
+          />
+          <text class="score-hint" wx:if="{{item.isCaboCaller && caboWon === false}}">+10</text>
+          <text class="score-hint score-win" wx:if="{{item.isCaboCaller && caboWon === true}}">→0</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Cabo结果选择面板（当选了喊话者时显示） -->
+    <view class="cabo-panel" wx:if="{{caboCallerId !== null}}">
+      <view class="cabo-panel-title">
+        <text class="cabo-panel-name">{{caboCallerName}}</text>
+        <text> 喊了 CABO，结果是？</text>
+      </view>
+      <view class="cabo-result-btns">
+        <view
+          class="cabo-result-btn {{caboWon === true ? 'result-selected-win' : ''}}"
+          data-result="win"
+          bindtap="setCaboResult"
+        >
+          <text class="result-emoji">🏆</text>
+          <text class="result-text">赢了</text>
+          <text class="result-desc">分最低，本轮得0分</text>
+        </view>
+        <view
+          class="cabo-result-btn {{caboWon === false ? 'result-selected-lose' : ''}}"
+          data-result="lose"
+          bindtap="setCaboResult"
+        >
+          <text class="result-emoji">😢</text>
+          <text class="result-text">输了</text>
+          <text class="result-desc">手牌总分+10</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-area">
+      <button class="btn-submit" bindtap="submitRound">
+        确认本轮分数 →
+      </button>
+    </view>
+  </view>
+
+</view>

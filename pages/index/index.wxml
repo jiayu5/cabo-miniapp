@@ -1,0 +1,94 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="header-title">
+      <text class="title-main">CABO</text>
+      <text class="title-sub">记分板</text>
+    </view>
+    <view class="game-status" wx:if="{{gameStarted}}">
+      <view class="status-badge">游戏进行中</view>
+    </view>
+  </view>
+
+  <!-- 玩家列表 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">玩家列表</text>
+      <text class="section-count">{{players.length}}/8</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{players.length === 0}}">
+      <text class="empty-icon">👥</text>
+      <text>还没有玩家，快来添加吧！</text>
+    </view>
+
+    <!-- 玩家卡片 -->
+    <view class="player-list">
+      <view
+        class="player-item"
+        wx:for="{{players}}"
+        wx:key="id"
+      >
+        <view class="player-avatar">
+          <text>{{item.name.substring(0, 1)}}</text>
+        </view>
+        <view class="player-info">
+          <text class="player-name">{{item.name}}</text>
+          <text class="player-score" wx:if="{{gameStarted}}">当前总分：{{item.totalScore}}</text>
+          <text class="player-score-idle" wx:else>待开始</text>
+        </view>
+        <view class="player-actions" wx:if="{{!gameStarted}}">
+          <view class="btn-delete" data-id="{{item.id}}" bindtap="removePlayer">
+            <text>×</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 添加玩家输入框 -->
+    <view class="add-input-area" wx:if="{{showAddInput}}">
+      <input
+        class="name-input"
+        placeholder="输入玩家名称"
+        value="{{inputName}}"
+        bindinput="onNameInput"
+        bindconfirm="addPlayer"
+        maxlength="8"
+        focus="{{showAddInput}}"
+      />
+      <view class="input-actions">
+        <button class="btn-cancel" bindtap="toggleInput">取消</button>
+        <button class="btn-confirm" bindtap="addPlayer">添加</button>
+      </view>
+    </view>
+
+    <!-- 添加按钮 -->
+    <view
+      class="add-player-btn"
+      wx:if="{{!showAddInput && !gameStarted && players.length < 8}}"
+      bindtap="toggleInput"
+    >
+      <text class="add-icon">+</text>
+      <text>添加玩家</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮区域 -->
+  <view class="action-area">
+    <button
+      class="btn-start"
+      wx:if="{{!gameStarted}}"
+      bindtap="startGame"
+      disabled="{{players.length < 2}}"
+    >
+      开始游戏
+    </button>
+
+    <view class="game-actions" wx:else>
+      <button class="btn-continue" bindtap="startGame">继续记分</button>
+      <button class="btn-reset" bindtap="resetGame">重置游戏</button>
+    </view>
+  </view>
+</view>
